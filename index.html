@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <title>FluxLight</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<h1>💡 FluxLight</h1>
+
+<div class="box">
+  <h2>Fita LED</h2>
+  <button onclick="ledOn()">Ligar</button>
+  <button onclick="ledOff()">Desligar</button>
+
+  <input type="color" onchange="setColor(this.value)">
+</div>
+
+<div class="box">
+  <h2>Lâmpadas Shelly</h2>
+  <button onclick="shellyOn()">Ligar</button>
+  <button onclick="shellyOff()">Desligar</button>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
