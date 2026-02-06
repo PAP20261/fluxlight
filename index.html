@@ -1,28 +1,239 @@
 <!DOCTYPE html>
 <html lang="pt">
 <head>
-  <meta charset="UTF-8">
-  <title>FluxLight</title>
-  <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FluxLight - Sistema de Iluminação Inteligente</title>
+    <style>
+        /* Estilos profissionais e modernos */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #0f172a; /* Azul escuro elegante */
+            color: #f1f5f9; /* Branco suave */
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        header {
+            text-align: center;
+            padding: 2rem 0;
+            width: 100%;
+            background: linear-gradient(to bottom, #1e293b, #0f172a);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin: 0;
+            color: #60a5fa; /* Azul claro para destaque */
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        main {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+            padding: 2rem;
+            max-width: 600px;
+            width: 100%;
+        }
+
+        .section {
+            background-color: #1e293b; /* Fundo escuro profissional */
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .section:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        h2 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: #93c5fd;
+        }
+
+        .controls {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .button-group {
+            display: flex;
+            justify-content: space-between;
+            gap: 1rem;
+        }
+
+        button {
+            flex: 1;
+            padding: 0.75rem 1.5rem;
+            font-size: 1rem;
+            font-weight: bold;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        #btn-on {
+            background-color: #22c55e; /* Verde para ligar */
+            color: white;
+        }
+
+        #btn-off {
+            background-color: #ef4444; /* Vermelho para desligar */
+            color: white;
+        }
+
+        label {
+            font-size: 1rem;
+            margin-bottom: 0.5rem;
+            display: block;
+            color: #cbd5e1;
+        }
+
+        input[type="color"] {
+            width: 100%;
+            height: 50px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        input[type="range"] {
+            width: 100%;
+            height: 8px;
+            background: #334155;
+            border-radius: 4px;
+            cursor: pointer;
+            accent-color: #60a5fa; /* Azul para slider */
+        }
+
+        footer {
+            text-align: center;
+            padding: 1rem 0;
+            font-size: 0.875rem;
+            color: #94a3b8;
+            width: 100%;
+            background-color: #1e293b;
+            position: fixed;
+            bottom: 0;
+        }
+
+        /* Responsividade para mobile */
+        @media (max-width: 480px) {
+            main {
+                padding: 1rem;
+            }
+
+            .section {
+                padding: 1rem;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            h2 {
+                font-size: 1.25rem;
+            }
+
+            button {
+                padding: 0.6rem 1.2rem;
+                font-size: 0.9rem;
+            }
+        }
+    </style>
 </head>
 <body>
+    <header>
+        <h1>FluxLight</h1>
+    </header>
 
-<h1>💡 FluxLight</h1>
+    <main>
+        <section class="section">
+            <h2>Controlo da Fita LED WS2812B</h2>
+            <div class="controls">
+                <div class="button-group">
+                    <button id="btn-on" onclick="ligarLED()">Ligar</button>
+                    <button id="btn-off" onclick="desligarLED()">Desligar</button>
+                </div>
+                <label for="cor">Selecionar Cor:</label>
+                <input type="color" id="cor" onchange="mudarCor()">
+                <label for="brilho">Brilho:</label>
+                <input type="range" id="brilho" min="0" max="255" value="128" onchange="mudarBrilho(this.value)">
+            </div>
+        </section>
 
-<div class="box">
-  <h2>Fita LED</h2>
-  <button onclick="ledOn()">Ligar</button>
-  <button onclick="ledOff()">Desligar</button>
+        <section class="section">
+            <h2>Controlo das Lâmpadas Shelly Duo</h2>
+            <div class="controls">
+                <div class="button-group">
+                    <button id="btn-on" onclick="ligarShelly()">Ligar Todas</button>
+                    <button id="btn-off" onclick="desligarShelly()">Desligar Todas</button>
+                </div>
+            </div>
+        </section>
+    </main>
 
-  <input type="color" onchange="setColor(this.value)">
-</div>
+    <footer>
+        <p>FluxLight - Projeto PAP | Desenvolvido com ESP32 e IoT</p>
+    </footer>
 
-<div class="box">
-  <h2>Lâmpadas Shelly</h2>
-  <button onclick="shellyOn()">Ligar</button>
-  <button onclick="shellyOff()">Desligar</button>
-</div>
+    <script>
+        // ALTERAR ESTE IP para o IP real do teu ESP32 (vê no Serial Monitor)
+        const ESP32_IP = "http://192.168.1.100";  // <--- Muda aqui para o teu IP
 
-<script src="script.js"></script>
+        // Funções para Fita LED
+        function ligarLED() {
+            fetch(`${ESP32_IP}/led/on`);
+        }
+
+        function desligarLED() {
+            fetch(`${ESP32_IP}/led/off`);
+        }
+
+        function mudarCor() {
+            const cor = document.getElementById('cor').value;
+            const r = parseInt(cor.substr(1, 2), 16);
+            const g = parseInt(cor.substr(3, 2), 16);
+            const b = parseInt(cor.substr(5, 2), 16);
+            fetch(`${ESP32_IP}/led/color?r=${r}&g=${g}&b=${b}`);
+        }
+
+        function mudarBrilho(valor) {
+            fetch(`${ESP32_IP}/led/brightness?value=${valor}`);
+        }
+
+        // Funções para Lâmpadas Shelly
+        function ligarShelly() {
+            fetch(`${ESP32_IP}/shelly/on`);
+        }
+
+        function desligarShelly() {
+            fetch(`${ESP32_IP}/shelly/off`);
+        }
+    </script>
 </body>
 </html>
