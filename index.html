@@ -1,63 +1,87 @@
 <!DOCTYPE html>
 <html lang="pt">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>FluxLight • Controlo Inteligente</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FluxLight - Controlo Inteligente de Iluminação</title>
+    
+    <!-- Fontes Google premium -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- CSS separado -->
+    <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
-  <header>
-    <h1>FluxLight</h1>
-    <div class="subtitle">Sistema de Iluminação Inteligente • PAP 2026</div>
-  </header>
+    <!-- Fundo com gradiente animado sutil -->
+    <div class="background-gradient"></div>
 
-  <div class="container">
+    <header class="header">
+        <div class="logo">FluxLight</div>
+        <nav class="nav">
+            <a href="#led">Fita LED</a>
+            <a href="#shelly">Lâmpadas</a>
+            <a href="#settings">Avançado</a>
+        </nav>
+    </header>
 
-    <!-- Controlo da Fita LED WS2812B -->
-    <div class="card">
-      <h2>Fita LED WS2812B</h2>
+    <main class="main-container">
+        <!-- Cartão Fita LED -->
+        <section id="led" class="card led-section">
+            <h2>Fita LED WS2812B</h2>
+            <div class="card-content">
+                <div class="button-group">
+                    <button class="btn btn-on" data-action="led/on">Ligar</button>
+                    <button class="btn btn-off" data-action="led/off">Desligar</button>
+                </div>
+                
+                <div class="slider-control">
+                    <label>Cor</label>
+                    <input type="color" id="colorPicker" value="#ffffff" class="color-input">
+                </div>
+                
+                <div class="slider-control">
+                    <label>Brilho <span id="brightness-val">180</span></label>
+                    <input type="range" id="brightness" min="0" max="255" value="180" class="range-slider">
+                </div>
+                
+                <div class="status-message" id="status-led"></div>
+            </div>
+        </section>
 
-      <div class="btn-group">
-        <button class="btn-primary" onclick="send('led/on')">Ligar</button>
-        <button class="btn-danger" onclick="send('led/off')">Desligar</button>
-      </div>
+        <!-- Cartão Lâmpadas Shelly -->
+        <section id="shelly" class="card shelly-section">
+            <h2>Lâmpadas Shelly Duo RGBW</h2>
+            <div class="card-content">
+                <div class="button-group">
+                    <button class="btn btn-on" data-action="shelly/on">Ligar Todas</button>
+                    <button class="btn btn-off" data-action="shelly/off">Desligar Todas</button>
+                </div>
+                <div class="status-message" id="status-shelly"></div>
+            </div>
+        </section>
 
-      <div class="control-row">
-        <label>Cor</label>
-        <input type="color" id="colorPicker" value="#ffffff" onchange="sendColor()" />
-      </div>
+        <!-- Cartão Configurações Avançadas -->
+        <section id="settings" class="card settings-section">
+            <h2>Modos Avançados</h2>
+            <div class="card-content">
+                <div class="button-group advanced">
+                    <button class="btn btn-special" onclick="send('modo/disco')">Modo Disco</button>
+                    <button class="btn btn-special" onclick="send('modo/noite')">Modo Noite</button>
+                    <button class="btn btn-special" onclick="alert('Voz em desenvolvimento')">Controlo por Voz</button>
+                </div>
+                <div class="status-message" id="status-advanced"></div>
+            </div>
+        </section>
+    </main>
 
-      <div class="control-row" style="margin-top: 1.25rem;">
-        <label>Brilho</label>
-        <input type="range" id="brightness" min="0" max="255" value="180" oninput="sendBrightness(this.value)" />
-      </div>
+    <footer class="footer">
+        <p>FluxLight • Projeto PAP 2026 • Desenvolvido com HTML, CSS, JavaScript e ESP32</p>
+    </footer>
 
-      <div id="status-led" class="status"></div>
-    </div>
-
-    <!-- Controlo das Lâmpadas Shelly Duo RGBW -->
-    <div class="card">
-      <h2>Lâmpadas Shelly Duo RGBW</h2>
-
-      <div class="btn-group">
-        <button class="btn-primary" onclick="send('shelly/on')">Ligar Todas</button>
-        <button class="btn-danger" onclick="send('shelly/off')">Desligar Todas</button>
-      </div>
-
-      <div id="status-shelly" class="status"></div>
-    </div>
-
-  </div>
-
-  <footer>
-    FluxLight • Projeto PAP • HTML + CSS + JavaScript + ESP32
-  </footer>
-
-  <script src="js/script.js"></script>
+    <!-- JavaScript separado -->
+    <script src="js/script.js"></script>
 </body>
 </html>
