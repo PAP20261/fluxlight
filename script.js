@@ -12,7 +12,7 @@
 
 // ─── CONFIGURAÇÃO PRINCIPAL ────────────────────────────────────
 // ❗ ALTERAR: IP do ESP32 (verificar no Serial Monitor após arranque)
-const ESP32_IP = "http://192.168.1.100";
+const ESP32_IP = "http://192.168.1.115";
 
 // ❗ ALTERAR: IPs locais das lâmpadas Shelly RGBW E27
 const SHELLY_IPS = [
