@@ -42,7 +42,7 @@ const char* password = "A_TUA_PASSWORD";   // ← ALTERAR
 
 // ❗ Fita LED WS2812B
 #define LED_PIN   13    // ← ALTERAR se usares outro GPIO
-#define NUM_LEDS  150   // ← ALTERAR conforme o número real de LEDs
+#define NUM_LEDS  300  // ← ALTERAR conforme o número real de LEDs
 
 // ❗ IPs locais das lâmpadas Shelly RGBW
 // (verificar na app Shelly ou no router)
