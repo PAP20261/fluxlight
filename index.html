@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FluxLight — Smart Lighting</title>
+  <link rel="stylesheet" href="style.css" />
+  <!-- Google Fonts: Syne (display) + DM Sans (body) -->
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js" defer></script>
+</head>
+<body>
+
+  <!-- ══════════════ SIDEBAR ══════════════ -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-icon">
+        <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="16" cy="16" r="15" stroke="url(#g1)" stroke-width="2"/>
+          <path d="M16 6 C10 6 7 11 7 15 C7 20 10 23 13 24 L13 26 L19 26 L19 24 C22 23 25 20 25 15 C25 11 22 6 16 6Z" fill="url(#g2)"/>
+          <rect x="13" y="26" width="6" height="2" rx="1" fill="url(#g2)"/>
+          <defs>
+            <linearGradient id="g1" x1="0" y1="0" x2="32" y2="32">
+              <stop offset="0%" stop-color="#f97316"/>
+              <stop offset="100%" stop-color="#facc15"/>
+            </linearGradient>
+            <linearGradient id="g2" x1="0" y1="0" x2="32" y2="32">
+              <stop offset="0%" stop-color="#fb923c"/>
+              <stop offset="100%" stop-color="#fde047"/>
+            </linearGradient>
+          </defs>
+        </svg>
+      </div>
+      <span class="logo-text">FluxLight</span>
+    </div>
+
+    <nav class="sidebar-nav">
+      <a class="nav-item active" data-section="dashboard" href="#" onclick="showSection('dashboard',this)">
+        <i data-lucide="layout-dashboard"></i><span>Dashboard</span>
+      </a>
+      <a class="nav-item" data-section="strip" href="#" onclick="showSection('strip',this)">
+        <i data-lucide="zap"></i><span>Fita LED</span>
+      </a>
+      <a class="nav-item" data-section="bulbs" href="#" onclick="showSection('bulbs',this)">
+        <i data-lucide="lightbulb"></i><span>Lâmpadas</span>
+      </a>
+      <a class="nav-item" data-section="effects" href="#" onclick="showSection('effects',this)">
+        <i data-lucide="sparkles"></i><span>Efeitos</span>
+      </a>
+      <a class="nav-item" data-section="settings" href="#" onclick="showSection('settings',this)">
+        <i data-lucide="settings-2"></i><span>Definições</span>
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="connection-status" id="connStatus">
+        <span class="status-dot" id="statusDot"></span>
+        <span id="statusText">A ligar...</span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ══════════════ HAMBURGER (mobile) ══════════════ -->
+  <button class="hamburger" id="hamburger" onclick="toggleSidebar()" aria-label="Menu">
+    <i data-lucide="menu"></i>
+  </button>
+
+  <!-- ══════════════ MAIN CONTENT ══════════════ -->
+  <main class="main" id="main">
+
+    <!-- ─── HEADER ─── -->
+    <header class="topbar">
+      <div class="topbar-left">
+        <h1 class="page-title" id="pageTitle">Dashboard</h1>
+        <p class="page-sub" id="pageSub">Visão geral do sistema</p>
+      </div>
+      <div class="topbar-right">
+        <button class="btn-icon" onclick="checkConnection()" title="Verificar ligação">
+          <i data-lucide="refresh-cw"></i>
+        </button>
+        <button class="btn-icon master-toggle" id="masterBtn" onclick="masterToggle()" title="Ligar/desligar tudo">
+          <i data-lucide="power"></i>
+        </button>
+      </div>
+    </header>
+
+    <!-- ══════════════ DASHBOARD SECTION ══════════════ -->
+    <section class="section" id="section-dashboard">
+
+      <!-- Stat cards -->
+      <div class="stats-grid">
+        <div class="stat-card" id="stat-led">
+          <div class="stat-icon led-icon"><i data-lucide="zap"></i></div>
+          <div class="stat-info">
+            <span class="stat-label">Fita LED</span>
+            <span class="stat-value" id="statLedStatus">OFF</span>
+          </div>
+          <div class="stat-indicator" id="statLedDot"></div>
+        </div>
+        <div class="stat-card" id="stat-bulb1">
+          <div class="stat-icon bulb-icon"><i data-lucide="lightbulb"></i></div>
+          <div class="stat-info">
+            <span class="stat-label">Lâmpada 1</span>
+            <span class="stat-value" id="statBulb1Status">OFF</span>
+          </div>
+          <div class="stat-indicator" id="statBulb1Dot"></div>
+        </div>
+        <div class="stat-card" id="stat-bulb2">
+          <div class="stat-icon bulb-icon"><i data-lucide="lightbulb"></i></div>
+          <div class="stat-info">
+            <span class="stat-label">Lâmpada 2</span>
+            <span class="stat-value" id="statBulb2Status">OFF</span>
+          </div>
+          <div class="stat-indicator" id="statBulb2Dot"></div>
+        </div>
+        <div class="stat-card" id="stat-effect">
+          <div class="stat-icon fx-icon"><i data-lucide="sparkles"></i></div>
+          <div class="stat-info">
+            <span class="stat-label">Efeito Ativo</span>
+            <span class="stat-value" id="statEffect">Nenhum</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick controls -->
+      <div class="section-title">Controlo Rápido</div>
+      <div class="quick-grid">
+        <div class="quick-card" onclick="showSection('strip', document.querySelector('[data-section=strip]'))">
+          <div class="quick-preview" id="qLedPreview"></div>
+          <span>Fita LED</span>
+          <small>GPIO 13 · 150 LEDs</small>
+        </div>
+        <div class="quick-card" onclick="showSection('bulbs', document.querySelector('[data-section=bulbs]'))">
+          <div class="quick-preview bulb-preview"><i data-lucide="lightbulb"></i></div>
+          <span>Lâmpadas</span>
+          <small>2 × Shelly RGBW</small>
+        </div>
+        <div class="quick-card" onclick="showSection('effects', document.querySelector('[data-section=effects]'))">
+          <div class="quick-preview fx-preview"><i data-lucide="sparkles"></i></div>
+          <span>Efeitos</span>
+          <small>6 efeitos dinâmicos</small>
+        </div>
+      </div>
+
+      <!-- Scene shortcuts -->
+      <div class="section-title">Cenas Rápidas</div>
+      <div class="scene-grid">
+        <button class="scene-btn" onclick="applyScene('relax')">
+          <span class="scene-emoji">🌅</span><span>Relaxar</span>
+        </button>
+        <button class="scene-btn" onclick="applyScene('focus')">
+          <span class="scene-emoji">💡</span><span>Foco</span>
+        </button>
+        <button class="scene-btn" onclick="applyScene('party')">
+          <span class="scene-emoji">🎉</span><span>Festa</span>
+        </button>
+        <button class="scene-btn" onclick="applyScene('night')">
+          <span class="scene-emoji">🌙</span><span>Noite</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- ══════════════ FITA LED SECTION ══════════════ -->
+    <section class="section hidden" id="section-strip">
+
+      <div class="control-card">
+        <div class="control-card-header">
+          <div class="device-info">
+            <div class="device-icon"><i data-lucide="zap"></i></div>
+            <div>
+              <strong>Fita LED WS2812B</strong>
+              <small>ESP32 · GPIO 13 · 150 LEDs</small>
+            </div>
+          </div>
+          <label class="toggle-switch">
+            <input type="checkbox" id="ledToggle" onchange="toggleLED(this.checked)" />
+            <span class="toggle-track"></span>
+          </label>
+        </div>
+
+        <!-- Color preview bar -->
+        <div class="color-preview-bar" id="ledColorBar"></div>
+
+        <!-- Color picker -->
+        <div class="control-section">
+          <label class="ctrl-label">Cor</label>
+          <div class="color-row">
+            <input type="color" class="color-wheel" id="ledColor" value="#ff6a00" oninput="applyLEDColor()" />
+            <div class="color-swatches">
+              <button class="swatch" style="--c:#ff0000" onclick="setColor('led','#ff0000')" title="Vermelho"></button>
+              <button class="swatch" style="--c:#ff6a00" onclick="setColor('led','#ff6a00')" title="Laranja"></button>
+              <button class="swatch" style="--c:#ffff00" onclick="setColor('led','#ffff00')" title="Amarelo"></button>
+              <button class="swatch" style="--c:#00ff00" onclick="setColor('led','#00ff00')" title="Verde"></button>
+              <button class="swatch" style="--c:#00bfff" onclick="setColor('led','#00bfff')" title="Ciano"></button>
+              <button class="swatch" style="--c:#0000ff" onclick="setColor('led','#0000ff')" title="Azul"></button>
+              <button class="swatch" style="--c:#8a2be2" onclick="setColor('led','#8a2be2')" title="Violeta"></button>
+              <button class="swatch" style="--c:#ffffff" onclick="setColor('led','#ffffff')" title="Branco"></button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Brightness -->
+        <div class="control-section">
+          <label class="ctrl-label">Brilho <span class="ctrl-value" id="ledBrightVal">200</span></label>
+          <input type="range" class="slider" id="ledBrightness" min="0" max="255" value="200"
+            oninput="updateBrightLabel(this.value,'ledBrightVal')"
+            onchange="applyLEDBrightness(this.value)" />
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════════ LÂMPADAS SECTION ══════════════ -->
+    <section class="section hidden" id="section-bulbs">
+
+      <!-- Global bulb controls -->
+      <div class="control-card">
+        <div class="control-card-header">
+          <div class="device-info">
+            <div class="device-icon all-icon"><i data-lucide="layers"></i></div>
+            <div>
+              <strong>Todas as Lâmpadas</strong>
+              <small>Controlo global via ESP32</small>
+            </div>
+          </div>
+          <div class="btn-group">
+            <button class="btn-sm btn-on" onclick="shellyAllOn()">ON</button>
+            <button class="btn-sm btn-off" onclick="shellyAllOff()">OFF</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bulb 1 -->
+      <div class="control-card bulb-card" id="bulbCard1">
+        <div class="control-card-header">
+          <div class="device-info">
+            <div class="device-icon bulb-led" id="bulbIcon1"><i data-lucide="lightbulb"></i></div>
+            <div>
+              <strong>Lâmpada 1</strong>
+              <small id="bulb1ip">192.168.1.101</small>
+            </div>
+          </div>
+          <label class="toggle-switch">
+            <input type="checkbox" id="bulb1Toggle" onchange="toggleBulb(1, this.checked)" />
+            <span class="toggle-track"></span>
+          </label>
+        </div>
+        <div class="color-preview-bar" id="bulb1ColorBar"></div>
+        <div class="control-section">
+          <label class="ctrl-label">Cor</label>
+          <div class="color-row">
+            <input type="color" class="color-wheel" id="bulb1Color" value="#ffffff" oninput="applyBulbColor(1)" />
+            <div class="color-swatches">
+              <button class="swatch" style="--c:#ff2200" onclick="setColor('bulb1','#ff2200')"></button>
+              <button class="swatch" style="--c:#ff8800" onclick="setColor('bulb1','#ff8800')"></button>
+              <button class="swatch" style="--c:#ffee00" onclick="setColor('bulb1','#ffee00')"></button>
+              <button class="swatch" style="--c:#00ff44" onclick="setColor('bulb1','#00ff44')"></button>
+              <button class="swatch" style="--c:#00aaff" onclick="setColor('bulb1','#00aaff')"></button>
+              <button class="swatch" style="--c:#aa00ff" onclick="setColor('bulb1','#aa00ff')"></button>
+              <button class="swatch" style="--c:#ffffff" onclick="setColor('bulb1','#ffffff')"></button>
+            </div>
+          </div>
+        </div>
+        <div class="control-section">
+          <label class="ctrl-label">Brilho <span class="ctrl-value" id="bulb1BrightVal">100</span>%</label>
+          <input type="range" class="slider" id="bulb1Brightness" min="0" max="100" value="100"
+            oninput="updateBrightLabel(this.value,'bulb1BrightVal')"
+            onchange="applyBulbBrightness(1,this.value)" />
+        </div>
+      </div>
+
+      <!-- Bulb 2 -->
+      <div class="control-card bulb-card" id="bulbCard2">
+        <div class="control-card-header">
+          <div class="device-info">
+            <div class="device-icon bulb-led" id="bulbIcon2"><i data-lucide="lightbulb"></i></div>
+            <div>
+              <strong>Lâmpada 2</strong>
+              <small id="bulb2ip">192.168.1.102</small>
+            </div>
+          </div>
+          <label class="toggle-switch">
+            <input type="checkbox" id="bulb2Toggle" onchange="toggleBulb(2, this.checked)" />
+            <span class="toggle-track"></span>
+          </label>
+        </div>
+        <div class="color-preview-bar" id="bulb2ColorBar"></div>
+        <div class="control-section">
+          <label class="ctrl-label">Cor</label>
+          <div class="color-row">
+            <input type="color" class="color-wheel" id="bulb2Color" value="#ffffff" oninput="applyBulbColor(2)" />
+            <div class="color-swatches">
+              <button class="swatch" style="--c:#ff2200" onclick="setColor('bulb2','#ff2200')"></button>
+              <button class="swatch" style="--c:#ff8800" onclick="setColor('bulb2','#ff8800')"></button>
+              <button class="swatch" style="--c:#ffee00" onclick="setColor('bulb2','#ffee00')"></button>
+              <button class="swatch" style="--c:#00ff44" onclick="setColor('bulb2','#00ff44')"></button>
+              <button class="swatch" style="--c:#00aaff" onclick="setColor('bulb2','#00aaff')"></button>
+              <button class="swatch" style="--c:#aa00ff" onclick="setColor('bulb2','#aa00ff')"></button>
+              <button class="swatch" style="--c:#ffffff" onclick="setColor('bulb2','#ffffff')"></button>
+            </div>
+          </div>
+        </div>
+        <div class="control-section">
+          <label class="ctrl-label">Brilho <span class="ctrl-value" id="bulb2BrightVal">100</span>%</label>
+          <input type="range" class="slider" id="bulb2Brightness" min="0" max="100" value="100"
+            oninput="updateBrightLabel(this.value,'bulb2BrightVal')"
+            onchange="applyBulbBrightness(2,this.value)" />
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ══════════════ EFEITOS SECTION ══════════════ -->
+    <section class="section hidden" id="section-effects">
+
+      <div class="section-title">Efeitos Dinâmicos</div>
+      <p class="section-desc">Seleciona um efeito para a Fita LED WS2812B. Os efeitos correm no ESP32.</p>
+
+      <div class="effects-grid">
+        <button class="effect-card" id="fx-rainbow" onclick="applyEffect('rainbow')">
+          <div class="effect-anim rainbow-anim"></div>
+          <i data-lucide="rainbow"></i>
+          <span>Rainbow</span>
+          <small>Ciclo de cores contínuo</small>
+        </button>
+        <button class="effect-card" id="fx-disco" onclick="applyEffect('disco')">
+          <div class="effect-anim disco-anim"></div>
+          <i data-lucide="music-2"></i>
+          <span>Disco</span>
+          <small>Cores aleatórias rápidas</small>
+        </button>
+        <button class="effect-card" id="fx-fire" onclick="applyEffect('fire')">
+          <div class="effect-anim fire-anim"></div>
+          <i data-lucide="flame"></i>
+          <span>Fire</span>
+          <small>Simulação de chama</small>
+        </button>
+        <button class="effect-card" id="fx-pulse" onclick="applyEffect('pulse')">
+          <div class="effect-anim pulse-anim"></div>
+          <i data-lucide="activity"></i>
+          <span>Pulse</span>
+          <small>Pulsação suave</small>
+        </button>
+        <button class="effect-card" id="fx-wave" onclick="applyEffect('wave')">
+          <div class="effect-anim wave-anim"></div>
+          <i data-lucide="waves"></i>
+          <span>Wave</span>
+          <small>Onda percorrendo a fita</small>
+        </button>
+        <button class="effect-card" id="fx-fade" onclick="applyEffect('fade')">
+          <div class="effect-anim fade-anim"></div>
+          <i data-lucide="sun-dim"></i>
+          <span>Fade</span>
+          <small>Transição suave entre cores</small>
+        </button>
+      </div>
+
+      <button class="btn-stop-effect" onclick="stopEffect()">
+        <i data-lucide="square"></i> Parar Efeito
+      </button>
+
+    </section>
+
+    <!-- ══════════════ SETTINGS SECTION ══════════════ -->
+    <section class="section hidden" id="section-settings">
+
+      <div class="section-title">Configuração do Sistema</div>
+
+      <div class="settings-card">
+        <h3>🌐 ESP32 — Rede Wi-Fi</h3>
+        <p class="settings-note">Alterar no ficheiro <code>esp32_code.ino</code></p>
+        <div class="settings-field">
+          <label>SSID (Nome da rede Wi-Fi)</label>
+          <code class="code-tag">const char* ssid = "O_TEU_WIFI";</code>
+        </div>
+        <div class="settings-field">
+          <label>Password do Wi-Fi</label>
+          <code class="code-tag">const char* password = "A_TUA_PASSWORD";</code>
+        </div>
+      </div>
+
+      <div class="settings-card">
+        <h3>📡 IP do ESP32</h3>
+        <p class="settings-note">Alterar no ficheiro <code>script.js</code></p>
+        <div class="settings-field">
+          <label>IP do ESP32 (ver no Serial Monitor)</label>
+          <div class="settings-row">
+            <code class="code-tag" id="displayEspIp">http://192.168.1.100</code>
+            <button class="btn-edit" onclick="editEspIp()">Editar</button>
+          </div>
+          <input type="text" class="settings-input hidden" id="espIpInput" placeholder="http://192.168.1.100"
+            onblur="saveEspIp(this.value)" />
+        </div>
+      </div>
+
+      <div class="settings-card">
+        <h3>💡 IPs das Lâmpadas Shelly</h3>
+        <p class="settings-note">Alterar no ficheiro <code>script.js</code> — array <code>SHELLY_IPS</code></p>
+        <div class="settings-field">
+          <label>IP — Lâmpada 1</label>
+          <div class="settings-row">
+            <code class="code-tag" id="displayBulb1Ip">192.168.1.101</code>
+            <button class="btn-edit" onclick="editBulbIp(1)">Editar</button>
+          </div>
+          <input type="text" class="settings-input hidden" id="bulb1IpInput" placeholder="192.168.1.101"
+            onblur="saveBulbIp(1, this.value)" />
+        </div>
+        <div class="settings-field">
+          <label>IP — Lâmpada 2</label>
+          <div class="settings-row">
+            <code class="code-tag" id="displayBulb2Ip">192.168.1.102</code>
+            <button class="btn-edit" onclick="editBulbIp(2)">Editar</button>
+          </div>
+          <input type="text" class="settings-input hidden" id="bulb2IpInput" placeholder="192.168.1.102"
+            onblur="saveBulbIp(2, this.value)" />
+        </div>
+      </div>
+
+      <div class="settings-card">
+        <h3>🔧 Configuração ESP32</h3>
+        <p class="settings-note">Alterar no ficheiro <code>esp32_code.ino</code></p>
+        <div class="settings-field">
+          <label>Número de LEDs</label>
+          <code class="code-tag">#define NUM_LEDS 150</code>
+        </div>
+        <div class="settings-field">
+          <label>GPIO da fita LED</label>
+          <code class="code-tag">#define LED_PIN 13</code>
+        </div>
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- ══════════════ TOAST NOTIFICATION ══════════════ -->
+  <div class="toast" id="toast"></div>
+
+  <!-- Overlay for mobile sidebar -->
+  <div class="overlay" id="overlay" onclick="toggleSidebar()"></div>
+
+  <script src="script.js"></script>
+</body>
+</html>
