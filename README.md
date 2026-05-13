@@ -132,4 +132,4 @@ http://<IP_SHELLY>/light/0?gain=80
 
 ---
 
-*FluxLight — PAP 2024/2025*
+*FluxLight — PAP 2025/2026*
